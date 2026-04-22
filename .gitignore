@@ -1,0 +1,34 @@
+node_modules/
+dist/
+.DS_Store
+
+# secrets
+.env
+.env.local
+tokens.json
+
+# discovery artifacts — never commit
+fixtures/
+notes/
+
+# codegen outputs that are derived (large, regenerated via refresh-schema)
+schema/types.generated.ts
+schema/introspection.json
+
+# editors
+.vscode/
+.idea/
+*.swp
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# next.js viewer build output
+viewer/.next/
+viewer/node_modules/
+viewer/next-env.d.ts
+
+# user ranking data — never commit
+viewer/public/talent-search.csv
