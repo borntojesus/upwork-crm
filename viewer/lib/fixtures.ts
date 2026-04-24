@@ -74,22 +74,35 @@ export interface Transcript {
   tenant?: TenantSlug;
 }
 
-function readJson<T>(path: string): T {
-  return JSON.parse(readFileSync(path, "utf8")) as T;
+function readJson<T>(path: string, fallback: T): T {
+  if (!existsSync(path)) return fallback;
+  try {
+    return JSON.parse(readFileSync(path, "utf8")) as T;
+  } catch {
+    return fallback;
+  }
 }
 
+const EMPTY_LEADS: LeadsFile = {
+  generatedAt: "",
+  count: 0,
+  totalMessages: 0,
+  leads: [],
+};
+const EMPTY_ROOMS: RoomsFile = { generatedAt: "", count: 0, rooms: [] };
+
 export function getLeads(): LeadsFile {
-  return readJson<LeadsFile>(resolve(FIXTURES_ROOT, "leads.json"));
+  return readJson<LeadsFile>(resolve(FIXTURES_ROOT, "leads.json"), EMPTY_LEADS);
 }
 
 export function getRooms(): RoomsFile {
-  return readJson<RoomsFile>(resolve(FIXTURES_ROOT, "rooms.json"));
+  return readJson<RoomsFile>(resolve(FIXTURES_ROOT, "rooms.json"), EMPTY_ROOMS);
 }
 
 export function getTranscript(roomId: string): Transcript | null {
   const p = resolve(FIXTURES_ROOT, "transcripts", `${roomId}.json`);
   if (!existsSync(p)) return null;
-  return readJson<Transcript>(p);
+  return readJson<Transcript>(p, null as unknown as Transcript);
 }
 
 // ─── Contracts ──────────────────────────────────────────────────────────────
@@ -128,7 +141,11 @@ export interface ContractsFile {
 }
 
 export function getContracts(): ContractsFile {
-  return readJson<ContractsFile>(resolve(FIXTURES_ROOT, "contracts.json"));
+  return readJson<ContractsFile>(resolve(FIXTURES_ROOT, "contracts.json"), {
+    fetchedAt: "",
+    count: 0,
+    contracts: [],
+  });
 }
 
 // ─── Offers ─────────────────────────────────────────────────────────────────
@@ -163,7 +180,11 @@ export interface OffersFile {
 }
 
 export function getOffers(): OffersFile {
-  return readJson<OffersFile>(resolve(FIXTURES_ROOT, "offers.json"));
+  return readJson<OffersFile>(resolve(FIXTURES_ROOT, "offers.json"), {
+    fetchedAt: "",
+    count: 0,
+    offers: [],
+  });
 }
 
 // ─── Transactions ────────────────────────────────────────────────────────────
@@ -198,6 +219,12 @@ export interface TransactionsFile {
 export function getTransactions(): TransactionsFile {
   return readJson<TransactionsFile>(
     resolve(FIXTURES_ROOT, "transactions.json"),
+    {
+      fetchedAt: "",
+      count: 0,
+      totalByMonth: [],
+      transactions: [],
+    },
   );
 }
 
@@ -249,7 +276,13 @@ export interface PublicJobsFile {
 
 export function getPublicJobs(): PublicJob[] {
   const root = resolve(process.cwd(), "..", "fixtures", "05-jobs-public.json");
-  const data = readJson<PublicJobsFile>(root);
+  const empty: PublicJobsFile = {
+    publicMarketplaceJobPostingsSearch: {
+      jobs: [],
+      paging: { total: 0, count: 0, offset: 0 },
+    },
+  };
+  const data = readJson<PublicJobsFile>(root, empty);
   return data.publicMarketplaceJobPostingsSearch.jobs;
 }
 
@@ -506,7 +539,7 @@ export function getScanJobs(slug: string): ScanFile | null {
   const p = resolve(SCANS_DIR, `${slug}.json`);
   if (!existsSync(p)) return null;
   try {
-    return readJson<ScanFile>(p);
+    return readJson<ScanFile>(p, null as unknown as ScanFile);
   } catch {
     return null;
   }
@@ -515,7 +548,7 @@ export function getScanJobs(slug: string): ScanFile | null {
 export function getScansIndex(): ScansIndex | null {
   if (!existsSync(SCANS_INDEX)) return null;
   try {
-    return readJson<ScansIndex>(SCANS_INDEX);
+    return readJson<ScansIndex>(SCANS_INDEX, null as unknown as ScansIndex);
   } catch {
     return null;
   }
