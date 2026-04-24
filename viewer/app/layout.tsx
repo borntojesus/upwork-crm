@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { getLeads, getOffers, getRooms } from "@/lib/fixtures";
-import { TenantSwitcher } from "@/components/tenant-switcher";
+import { TenantSwitcherWithCounts } from "@/components/tenant-switcher-server";
 import { Suspense } from "react";
 
 const geistSans = Geist({ subsets: ["latin"], variable: "--font-sans" });
@@ -62,18 +62,24 @@ export default function RootLayout({
                 }}
               />
               <SidebarInset>
-                <header className="sticky top-6 z-30 flex h-14 items-center gap-2 border-b border-border/60 bg-background/80 px-4 backdrop-blur-xl">
-                  <SidebarTrigger className="-ml-1" />
-                  <Separator orientation="vertical" className="mx-1 h-5" />
+                <header className="sticky top-6 z-30 flex min-h-14 flex-wrap items-center gap-2 border-b border-border/60 bg-background/80 px-4 py-2 backdrop-blur-xl">
+                  <SidebarTrigger className="-ml-1 shrink-0" />
+                  <Separator
+                    orientation="vertical"
+                    className="mx-1 h-5 shrink-0"
+                  />
                   <Suspense fallback={null}>
-                    <TenantSwitcher />
+                    <TenantSwitcherWithCounts />
                   </Suspense>
-                  <Separator orientation="vertical" className="mx-1 h-5" />
-                  <span className="text-sm text-muted-foreground">
+                  <Separator
+                    orientation="vertical"
+                    className="mx-1 hidden h-5 shrink-0 sm:block"
+                  />
+                  <span className="hidden text-sm text-muted-foreground sm:inline">
                     {rooms.count} rooms · {leads.count} leads ·{" "}
                     {leads.totalMessages.toLocaleString("en-US")} messages
                   </span>
-                  <kbd className="ml-auto hidden items-center gap-1 rounded border border-border/60 bg-muted px-2 py-0.5 text-xs font-mono text-muted-foreground select-none sm:inline-flex">
+                  <kbd className="ml-auto hidden shrink-0 items-center gap-1 rounded border border-border/60 bg-muted px-2 py-0.5 text-xs font-mono text-muted-foreground select-none sm:inline-flex">
                     <span>⌘</span>K
                   </kbd>
                 </header>

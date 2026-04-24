@@ -4,7 +4,14 @@ import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { FileTextIcon, FolderIcon, FolderOpenIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { IdeaNode } from "@/lib/ideas";
+// IdeaNode kept as a local type — the filesystem-backed tree is no longer used
+// but this component is preserved for potential future re-use.
+interface IdeaNode {
+  name: string;
+  slug: string;
+  type: "folder" | "file";
+  children?: IdeaNode[];
+}
 
 interface TreeNodeProps {
   node: IdeaNode;
